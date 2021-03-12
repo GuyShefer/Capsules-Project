@@ -4,6 +4,7 @@
     const excurrentTableRowaInfoUrl = 'https://appleseed-wa.herokuapp.com/api/users/'
     let group = JSON.parse(localStorage.getItem('group')) || [];
     const table = document.querySelector('#table-body');
+    const tableHead = document.querySelector('#table-head');
     let currentTableRow;
     let rowLength;
 
@@ -24,7 +25,7 @@
     }
 
     function printTable() {
-        table.innerHTML = `<currentTableRow>
+        tableHead.innerHTML = `<tr class="table-head">
         <th>Id</th>
         <th>FirstName</th>
         <th>LastName</th>
@@ -35,7 +36,8 @@
         <th>Hobby</th>
         <th>Button</th>
         <th>Button</th>
-         </currentTableRow>`;
+         </tr>`;
+        table.innerHTML = '';
         group.forEach(student => {
             table.innerHTML +=
                 `<td>${student.id}</td>
@@ -56,7 +58,7 @@
         rowLength = currentTableRow.cells.length;
         for (let i = 1; i < rowLength - 2; i++) {
             const value = currentTableRow.cells[i].innerHTML;
-            currentTableRow.cells[i].innerHTML = `<td><input type="text" name="${value}" id="${id}${value}" value="${value}"></td>`;
+            currentTableRow.cells[i].innerHTML = `<td><input class="input" type="text" name="${value}" id="${id}${value}" value="${value}"></td>`;
         }
         currentTableRow.cells[rowLength - 2].outerHTML = `<td id="confirm-${id}" onclick="confirm(${id})"><i class="far fa-check-circle"></i></td>`;
         currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="cancel(${id})"><i class="far fa-window-close"></i></td>`;
