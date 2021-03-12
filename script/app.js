@@ -5,6 +5,7 @@
     let group = JSON.parse(localStorage.getItem('group')) || [];
     const table = document.querySelector('#table-body');
     let currentTableRow;
+    let rowLength;
 
     if (group.length === 0) {
         getFullGroupInfo();
@@ -51,8 +52,8 @@
     }
 
     updateStudent = (id) => {
-        currentTableRow = (document.querySelector(`#update-${id}`)).parentElement; // up to date info
-        const rowLength = currentTableRow.cells.length
+        currentTableRow = (document.querySelector(`#update-${id}`)).parentElement;
+        rowLength = currentTableRow.cells.length;
         for (let i = 1; i < rowLength - 2; i++) {
             const value = currentTableRow.cells[i].innerHTML;
             currentTableRow.cells[i].innerHTML = `<td><input type="text" name="${value}" id="${id}${value}" value="${value}"></td>`;
@@ -72,28 +73,27 @@
     }
 
     confirm = (id) => {
-        // have to save also in the object @#@#$@#$@#$@#$ and save it to the local storage
-        const rowLength = currentTableRow.cells.length; //duplicate?
         for (let i = 1; i < rowLength - 2; i++) {
             const cellValue = (currentTableRow.cells[i].children[0]).value;
-            currentTableRow.cells[i].innerHTML = `<td>${cellValue}</td>`
+            currentTableRow.cells[i].innerHTML = `<td>${cellValue}</td>`;
+            let key = Object.keys(group[id])[i];
+            group[id][key] = cellValue;
         }
-        currentTableRow.cells[rowLength - 2].outerHTML = `<td id="update-${id}" onclick="updateStudent(${id})"><i class="far fa-edit"></i></td>`
-        currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="deleteStudent(${id})"><i class="far fa-minus-square"></i></td>`
+        setUpdateAndDeleteBtns(id);
+        localStorage.setItem('group', JSON.stringify(group));
     }
 
     cancel = (id) => {
         const student = group.find(student => student.id === id);
-        const rowLength = currentTableRow.cells.length;
         for (let i = 1; i < rowLength - 2; i++) {
             currentTableRow.cells[i].innerHTML = `<td>${Object.values(student)[i]}</td>`
         }
+        setUpdateAndDeleteBtns(id);
+    }
+
+    const setUpdateAndDeleteBtns = (id) => {
         currentTableRow.cells[rowLength - 2].outerHTML = `<td id="update-${id}" onclick="updateStudent(${id})"><i class="far fa-edit"></i></td>`;
         currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="deleteStudent(${id})"><i class="far fa-minus-square"></i></td>`;
     }
-
-    
-
-
 
 })();
