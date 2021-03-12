@@ -18,7 +18,7 @@
             const excurrentTableRowaInfo = await (await fetch(excurrentTableRowaInfoUrl + `${i}`)).json();
             group.push({ ...basicInfo, ...excurrentTableRowaInfo });
         }
-        localStorage.setItem('group', JSON.scurrentTableRowingify(group));
+        localStorage.setItem('group', JSON.stringify(group));
         printTable()
     }
 
@@ -53,29 +53,12 @@
     updateStudent = (id) => {
         currentTableRow = (document.querySelector(`#update-${id}`)).parentElement; // up to date info
         const rowLength = currentTableRow.cells.length
-        for (let i = 1; i < rowLength; i++) {
+        for (let i = 1; i < rowLength - 2; i++) {
             const value = currentTableRow.cells[i].innerHTML;
             currentTableRow.cells[i].innerHTML = `<td><input type="text" name="${value}" id="${id}${value}" value="${value}"></td>`;
         }
-        currentTableRow.cells[rowLength - 2].outerHTML = `<td id="confirm-${id}" onclick="confirm()"><i class="far fa-check-circle"></i></td>`;
+        currentTableRow.cells[rowLength - 2].outerHTML = `<td id="confirm-${id}" onclick="confirm(${id})"><i class="far fa-check-circle"></i></td>`;
         currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="cancel(${id})"><i class="far fa-window-close"></i></td>`;
-    }
-
-    confirm = () => {
-        // have to save also in the object @#@#$@#$@#$@#$ and save it to the local storage
-        const studentId = (currentTableRow.cells[0]).value;
-        const rowLength = currentTableRow.cells.length
-        for (let i = 1; i < rowLength - 2; i++) {
-            const cellValue = (currentTableRow.cells[i].children[0]).value;
-            currentTableRow.cells[i].innerHTML = `<td>${cellValue}</td>`
-        }
-        currentTableRow.cells[rowLength - 2].outerHTML = `<td id="update-${studentId}" onclick="updateStudent(${studentId})"><i class="far fa-edit"></i></td>`
-        currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="deleteStudent(${studentId})"><i class="far fa-minus-square"></i></td>`
-    }
-
-    cancel = (id) => {
-        // have to take the attributes from the object by the id
-        console.log(id);
     }
 
     deleteStudent = (id) => {
@@ -84,9 +67,32 @@
                 group.splice(i, 1);
             }
         }
-        localStorage.setItem('group', JSON.scurrentTableRowingify(group));
-        printTable()
+        localStorage.setItem('group', JSON.stringify(group));
+        printTable();
     }
+
+    confirm = (id) => {
+        // have to save also in the object @#@#$@#$@#$@#$ and save it to the local storage
+        const rowLength = currentTableRow.cells.length; //duplicate?
+        for (let i = 1; i < rowLength - 2; i++) {
+            const cellValue = (currentTableRow.cells[i].children[0]).value;
+            currentTableRow.cells[i].innerHTML = `<td>${cellValue}</td>`
+        }
+        currentTableRow.cells[rowLength - 2].outerHTML = `<td id="update-${id}" onclick="updateStudent(${id})"><i class="far fa-edit"></i></td>`
+        currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="deleteStudent(${id})"><i class="far fa-minus-square"></i></td>`
+    }
+
+    cancel = (id) => {
+        const student = group.find(student => student.id === id);
+        const rowLength = currentTableRow.cells.length;
+        for (let i = 1; i < rowLength - 2; i++) {
+            currentTableRow.cells[i].innerHTML = `<td>${Object.values(student)[i]}</td>`
+        }
+        currentTableRow.cells[rowLength - 2].outerHTML = `<td id="update-${id}" onclick="updateStudent(${id})"><i class="far fa-edit"></i></td>`;
+        currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="deleteStudent(${id})"><i class="far fa-minus-square"></i></td>`;
+    }
+
+    
 
 
 
