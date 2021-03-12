@@ -7,12 +7,13 @@
     const tableHead = document.querySelector('#table-head');
     let currentTableRow;
     let rowLength;
+    let allEditBtns;
 
     if (group.length === 0) {
         getFullGroupInfo();
     } else { printTable() }
 
-    //  get full group information
+    //  get full students group information
     async function getFullGroupInfo() {
         const groupData = await (await fetch(groupUrl)).json();
         for (let i = 0; i < groupData.length; i++) {
@@ -48,7 +49,7 @@
         <td>${student.city}</td>
         <td>${student.gender}</td>
         <td>${student.hobby}</td>
-        <td id="update-${student.id}" onclick="updateStudent(${student.id})"><i class="far fa-edit"></i></td>
+        <td class="update-btn" id="update-${student.id}" onclick="updateStudent(${student.id})"><i class="far fa-edit"></i></td>
         <td onclick="deleteStudent(${student.id})"><i class="far fa-minus-square"></i></td>`
         })
     }
@@ -62,6 +63,25 @@
         }
         currentTableRow.cells[rowLength - 2].outerHTML = `<td id="confirm-${id}" onclick="confirm(${id})"><i class="far fa-check-circle"></i></td>`;
         currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="cancel(${id})"><i class="far fa-window-close"></i></td>`;
+        disableEditBtns();
+    }
+
+
+    const disableEditBtns = () => {
+        allEditBtns = document.querySelectorAll(".update-btn")
+        allEditBtns.forEach(button => {
+            button.setAttribute('onclick', null);
+            button.children[0].classList.add('unavailable-button');
+        })
+    }
+
+    const enableEditBtns = () => {
+        allEditBtns = document.querySelectorAll(".update-btn");
+        allEditBtns.forEach(button => {
+            const studentId = button.getAttribute('id').split('update-').pop();
+            button.setAttribute('onclick', `updateStudent(${studentId})`);
+            button.children[0].classList.remove('unavailable-button');
+        })
     }
 
     deleteStudent = (id) => {
@@ -82,6 +102,7 @@
             group[id][key] = cellValue;
         }
         setUpdateAndDeleteBtns(id);
+        enableEditBtns();
         localStorage.setItem('group', JSON.stringify(group));
     }
 
@@ -90,6 +111,7 @@
         for (let i = 1; i < rowLength - 2; i++) {
             currentTableRow.cells[i].innerHTML = `<td>${Object.values(student)[i]}</td>`
         }
+        enableEditBtns();
         setUpdateAndDeleteBtns(id);
     }
 

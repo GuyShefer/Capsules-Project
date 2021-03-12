@@ -70,6 +70,7 @@ tr:nth-child(odd):hover {
 
 .fa-edit {
     color: darkmagenta;
+    
 }
 
 .fa-minus-square {
@@ -78,6 +79,11 @@ tr:nth-child(odd):hover {
 
 .fa-check-circle {
     color: green;
+}
+
+.update-btn .unavailable-button {
+    color: gray;
+    cursor: not-allowed;
 }
 
 .far {
