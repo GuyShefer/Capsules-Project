@@ -1,5 +1,4 @@
 (function () {
-
     const groupUrl = 'https://appleseed-wa.herokuapp.com/api/users/';
     const excurrentTableRowaInfoUrl = 'https://appleseed-wa.herokuapp.com/api/users/'
     let group = JSON.parse(localStorage.getItem('group')) || [];
@@ -11,6 +10,8 @@
     const searchDiv = document.querySelector('.search');
     const sortDiv = document.querySelector('.sort');
     const animation = document.querySelector('.animation');
+    const weaterUrl = 'https://api.openweathermap.org/data/2.5/weather?q='
+    const appId = 'd11c6918d8bf5bca750416481fe9bb11'
 
     if (group.length === 0) {
         getFullGroupInfo();
@@ -19,17 +20,23 @@
     //  get full students group information
     async function getFullGroupInfo() {
         animation.style.display = 'block';
-        const groupData = await (await fetch(groupUrl)).json();
-        for (let i = 0; i < groupData.length; i++) {
-            const basicInfo = groupData[i];
-            const excurrentTableRowaInfo = await (await fetch(excurrentTableRowaInfoUrl + `${i}`)).json();
-            group.push({ ...basicInfo, ...excurrentTableRowaInfo });
+        try {
+            const groupData = await (await fetch(groupUrl)).json();
+            for (let i = 0; i < groupData.length; i++) {
+                const basicInfo = groupData[i];
+                const excurrentTableRowaInfo = await (await fetch(excurrentTableRowaInfoUrl + `${i}`)).json();
+                group.push({ ...basicInfo, ...excurrentTableRowaInfo });
+            }
+
+            localStorage.setItem('group', JSON.stringify(group));
+            animation.style.display = 'none';
+            printTable(group)
+        } catch (err) {
+            console.log(err);
         }
-        localStorage.setItem('group', JSON.stringify(group));
-        animation.style.display = 'none';
-        printTable(group)
     }
 
+    // print the main table
     function printTable(group) {
         tableHead.innerHTML = `<tr class="table-head">
         <th>Id</th>
@@ -71,7 +78,7 @@
         disableEditBtns();
     }
 
-
+    // disabled all other buttons while editing information
     const disableEditBtns = () => {
         allEditBtns = document.querySelectorAll(".update-btn")
         allEditBtns.forEach(button => {
@@ -80,6 +87,7 @@
         })
     }
 
+    // enabled all other buttons
     const enableEditBtns = () => {
         allEditBtns = document.querySelectorAll(".update-btn");
         allEditBtns.forEach(button => {
@@ -121,12 +129,11 @@
     }
 
     const setUpdateAndDeleteBtns = (id) => {
-        currentTableRow.cells[rowLength - 2].outerHTML = `<td id="update-${id}" onclick="updateStudent(${id})"><i class="far fa-edit"></i></td>`;
+        currentTableRow.cells[rowLength - 2].outerHTML = `<td class="update-btn" id="update-${id}" onclick="updateStudent(${id})"><i class="far fa-edit"></i></td>`;
         currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="deleteStudent(${id})"><i class="far fa-minus-square"></i></td>`;
     }
 
     // Search & Sort //
-
     const createSelectInsideTheDiv = (div, selectId) => {
         div.innerHTML +=
             `<select class="select" id="select-${selectId}">
@@ -159,26 +166,29 @@
         printTable(tempGroup);
     })
 
-    ///
-
-    const weaterUrl = 'https://api.openweathermap.org/data/2.5/weather?q='
-    const appId = 'd11c6918d8bf5bca750416481fe9bb11'
-
     const cities = document.querySelectorAll(".city");
     for (let i = 0; i < cities.length; i++) {
         cities[i].addEventListener("mouseenter", async () => {
+            removeWeaterData();
             const cityName = cities[i].innerHTML;
             const url = weaterUrl + cityName + '&appid=' + appId;
-            const weaterData = await(await fetch(url)).json();
-            const cityWeaterTemp = Math.round(weaterData.main.temp - 273.15) + '℃' ;
-            console.log(cityWeaterTemp);
-            cities[i].setAttribute('data-before', cityWeaterTemp);
+            try {
+                const weaterData = await (await fetch(url)).json();
+                const cityWeaterTemp = Math.round(weaterData.main.temp - 273.15) + '℃';
+                cities[i].setAttribute('data-before', cityWeaterTemp);
+            } catch (err) {
+                cities[i].setAttribute('data-before', 'Not Avaiable');
+            }
         })
         cities[i].addEventListener("mouseleave", () => {
             cities[i].removeAttribute('data-before');
         })
     }
 
-
+    const removeWeaterData = () => {
+        cities.forEach(city => {
+            city.removeAttribute('data-before');
+        })
+    }
 
 })();
