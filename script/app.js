@@ -10,6 +10,7 @@
     let allEditBtns;
     const searchDiv = document.querySelector('.search');
     const sortDiv = document.querySelector('.sort');
+    const animation = document.querySelector('.animation');
 
     if (group.length === 0) {
         getFullGroupInfo();
@@ -17,6 +18,7 @@
 
     //  get full students group information
     async function getFullGroupInfo() {
+        animation.style.display = 'block';
         const groupData = await (await fetch(groupUrl)).json();
         for (let i = 0; i < groupData.length; i++) {
             const basicInfo = groupData[i];
@@ -24,6 +26,7 @@
             group.push({ ...basicInfo, ...excurrentTableRowaInfo });
         }
         localStorage.setItem('group', JSON.stringify(group));
+        animation.style.display = 'none';
         printTable(group)
     }
 
@@ -48,7 +51,7 @@
         <td>${student.lastName}</td>
         <td>${student.capsule}</td>
         <td>${student.age}</td>
-        <td>${student.city}</td>
+        <td class="city">${student.city}</td>
         <td>${student.gender}</td>
         <td>${student.hobby}</td>
         <td class="update-btn" id="update-${student.id}" onclick="updateStudent(${student.id})"><i class="far fa-edit"></i></td>
@@ -126,7 +129,7 @@
 
     const createSelectInsideTheDiv = (div, selectId) => {
         div.innerHTML +=
-            `<select id="select-${selectId}">
+            `<select class="select" id="select-${selectId}">
     <option value="firstName">First Name</option>
     <option value="lastName">Last Name</option>
     <option value="capsule">Capsule</option>
@@ -147,14 +150,35 @@
 
     createSelectInsideTheDiv(searchDiv, 'search');
     document.querySelector('#search').addEventListener('input', searchAndDisplayStudents);
-    
+
     createSelectInsideTheDiv(sortDiv, 'sort');
     const sortSelected = document.querySelector('#select-sort');
     sortSelected.addEventListener('change', e => {
         const value = e.target.value;
-        const tempGroup = group.sort((a,b) => a[value].toString().localeCompare(b[value].toString()));
+        const tempGroup = group.sort((a, b) => a[value].toString().localeCompare(b[value].toString()));
         printTable(tempGroup);
     })
+
+    ///
+
+    const weaterUrl = 'https://api.openweathermap.org/data/2.5/weather?q='
+    const appId = 'd11c6918d8bf5bca750416481fe9bb11'
+
+    const cities = document.querySelectorAll(".city");
+    for (let i = 0; i < cities.length; i++) {
+        cities[i].addEventListener("mouseenter", async () => {
+            const cityName = cities[i].innerHTML;
+            const url = weaterUrl + cityName + '&appid=' + appId;
+            const weaterData = await(await fetch(url)).json();
+            const cityWeaterTemp = Math.round(weaterData.main.temp - 273.15) + '℃' ;
+            console.log(cityWeaterTemp);
+            cities[i].setAttribute('data-before', cityWeaterTemp);
+        })
+        cities[i].addEventListener("mouseleave", () => {
+            cities[i].removeAttribute('data-before');
+        })
+    }
+
 
 
 })();

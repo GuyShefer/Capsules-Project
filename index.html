@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="/script/app.js" defer></script>
     <script src="https://kit.fontawesome.com/e12903ffc7.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <title>Bootcamp Capsules</title>
 </head>
 
@@ -19,15 +20,19 @@
 
     <main class="main">
 
-        <div class="search">
-            <label for="serach">Search:</label>
-            <input type="text" name="search" id="search">
+        <div class="manipulation">
+            <div class="search">
+                <label for="serach">Search:</label>
+                <input type="text" name="search" placeholder="text..." id="search">
+            </div>
+
+            <div class="sort">
+                <label for="sort">Sort By:</label>
+            </div>
         </div>
 
-        <div class="sort">
-            <label for="sort">Sort By:</label>
-        </div>
-        
+        <lottie-player class="animation" src="https://assets9.lottiefiles.com/packages/lf20_gqgyomqx.json" speed="1" loop autoplay></lottie-player>
+
         <table class="table" cellspacing="0">
             <thead id="table-head"></thead>
             <tbody id="table-body"></tbody>
