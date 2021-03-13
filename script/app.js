@@ -8,10 +8,12 @@
     let currentTableRow;
     let rowLength;
     let allEditBtns;
+    const searchDiv = document.querySelector('.search');
+    const sortDiv = document.querySelector('.sort');
 
     if (group.length === 0) {
         getFullGroupInfo();
-    } else { printTable() }
+    } else { printTable(group) }
 
     //  get full students group information
     async function getFullGroupInfo() {
@@ -22,10 +24,10 @@
             group.push({ ...basicInfo, ...excurrentTableRowaInfo });
         }
         localStorage.setItem('group', JSON.stringify(group));
-        printTable()
+        printTable(group)
     }
 
-    function printTable() {
+    function printTable(group) {
         tableHead.innerHTML = `<tr class="table-head">
         <th>Id</th>
         <th>FirstName</th>
@@ -91,7 +93,7 @@
             }
         }
         localStorage.setItem('group', JSON.stringify(group));
-        printTable();
+        printTable(group);
     }
 
     confirm = (id) => {
@@ -119,5 +121,40 @@
         currentTableRow.cells[rowLength - 2].outerHTML = `<td id="update-${id}" onclick="updateStudent(${id})"><i class="far fa-edit"></i></td>`;
         currentTableRow.cells[rowLength - 1].outerHTML = `<td onclick="deleteStudent(${id})"><i class="far fa-minus-square"></i></td>`;
     }
+
+    // Search & Sort //
+
+    const createSelectInsideTheDiv = (div, selectId) => {
+        div.innerHTML +=
+            `<select id="select-${selectId}">
+    <option value="firstName">First Name</option>
+    <option value="lastName">Last Name</option>
+    <option value="capsule">Capsule</option>
+    <option value="age">Age</option>
+    <option value="city">City</option>
+    <option value="gender">Gender</option>
+    <option value="hobby">Hobby</option>
+    </select>`
+    }
+
+    const searchAndDisplayStudents = function (e) {
+        const value = (e.target.value).toLowerCase();
+        const searchSelected = document.querySelector('#select-search');
+        const searchSelectedValue = searchSelected.value
+        const tempFilteredGrop = group.filter(student => student[searchSelectedValue].toString().toLowerCase().includes(value));
+        printTable(tempFilteredGrop);
+    }
+
+    createSelectInsideTheDiv(searchDiv, 'search');
+    document.querySelector('#search').addEventListener('input', searchAndDisplayStudents);
+    
+    createSelectInsideTheDiv(sortDiv, 'sort');
+    const sortSelected = document.querySelector('#select-sort');
+    sortSelected.addEventListener('change', e => {
+        const value = e.target.value;
+        const tempGroup = group.sort((a,b) => a[value].toString().localeCompare(b[value].toString()));
+        printTable(tempGroup);
+    })
+
 
 })();

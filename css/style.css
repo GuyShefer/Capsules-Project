@@ -10,6 +10,10 @@ body {
     background: PapayaWhip;
 }
 
+.header {
+    margin: 20px 0;
+}
+
 .main {
     align-items: center;
     display: flex;
